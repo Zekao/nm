@@ -22,3 +22,15 @@ void print_content_32(Elf32_Ehdr *header)
     while (content[++i])
         printf("%p %s \n", content[i], content[i]);
 }
+
+void	print_symbol_line(Elf64_Sym *symbol, char *strtab_content)
+{
+	char symbol_type = content_flag(symbol);
+
+	if (symbol_type == '?')
+		return ;
+	else if (symbol_type != 'U')
+		printf("%016lx %c %s\n", symbol->st_value, symbol_type, strtab_content + symbol->st_name);
+	else
+		printf("%-17c %c %s\n", 0, symbol_type, strtab_content + symbol->st_name);
+}
