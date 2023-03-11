@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/02/14 18:38:18 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/11 03:04:18 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ char **parse_elf64(Elf64_Ehdr *header)
 
 	Elf64_Shdr 		*section;
 	Elf64_Shdr 		*symtab;
-	Elf64_Shdr 		*strtab;
 	Elf64_Sym 		*symbol;
 	char 			*strtab_content;
 	size_t 			j;
@@ -99,21 +98,20 @@ char **parse_elf64(Elf64_Ehdr *header)
 
 
 	section = (void *)header + header->e_shoff;
+	strtab_content = (void *)header + section[header->e_shstrndx].sh_offset;
 	for (i = 0; i < header->e_shnum; i++) {
 		if (section[i].sh_type == SHT_SYMTAB)
 			symtab = &section[i];
-		else if (section[i].sh_type == SHT_STRTAB)
-			strtab = &section[i];
 	}
 
-	if (!symtab || !strtab)
+	if (!symtab || !strtab_content)
 		return (NULL);
 
-	strtab_content = (void *)header + strtab->sh_offset;
 	symbol = (void *)header + symtab->sh_offset;
+	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
 	for (j = 1; j < symtab->sh_size / sizeof(Elf64_Sym); j++)
-		print_symbol_line(&symbol[j], strtab_content);
+		print_symbol_line(&symbol[j], symbol_name_table);
 	return (NULL);
 }
 
