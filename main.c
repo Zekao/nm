@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/11 03:04:18 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/11 03:23:01 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,50 @@ char **parse_elf32(Elf32_Ehdr *header)
 		sh_offset: offset to section data
 		
 	*/
-	Elf32_Shdr *section;
-	Elf32_Shdr *strtab;
-	char *strtab_content;
-	char **content;
-	int i;
+	Elf32_Shdr 		*section;
+	Elf32_Shdr 		*symtab;
+	Elf32_Sym 		*symbol;
+	char 			*strtab_content;
+	size_t 			j;
+	size_t			i;
+
+
 
 	section = (void *)header + header->e_shoff;
-	strtab = &section[header->e_shstrndx];
-	strtab_content = (void *)header + strtab->sh_offset;
-	content = malloc(sizeof(char *) * header->e_shnum);
-	i = -1;
-	while (++i < header->e_shnum)
-		content[i] = strtab_content + section[i].sh_name;
-	return (content);
+	strtab_content = (void *)header + section[header->e_shstrndx].sh_offset;
+	for (i = 0; i < header->e_shnum; i++) {
+		if (section[i].sh_type == SHT_SYMTAB)
+			symtab = &section[i];
+	}
+
+	if (!symtab || !strtab_content)
+		return (NULL);
+
+	symbol = (void *)header + symtab->sh_offset;
+	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
+
+	for (j = 1; j < symtab->sh_size / sizeof(Elf32_Sym); j++)
+		print_symbol_line32(&symbol[j], symbol_name_table);
+	return (NULL);
+}
+
+char	content_flag32(Elf32_Sym *symbol)
+{
+	if (ELF64_ST_TYPE(symbol->st_info) == STT_FUNC)
+		return ('T');
+	else if (ELF64_ST_TYPE(symbol->st_info) == STT_OBJECT)
+		return ('D');
+	else if (ELF64_ST_TYPE(symbol->st_info) == STT_NOTYPE)
+		return ('U');
+	else if (ELF64_ST_TYPE(symbol->st_info) == STT_FILE)
+		return ('F');
+	else if (ELF64_ST_TYPE(symbol->st_info) == STT_COMMON)
+		return ('C');
+	else if (ELF64_ST_TYPE(symbol->st_info) == STT_TLS)
+		return ('T');
+	else if (ELF64_ST_TYPE(symbol->st_info) == STT_GNU_IFUNC)
+		return ('I');
+	return ('?');
 }
 
 char	content_flag(Elf64_Sym *symbol)
