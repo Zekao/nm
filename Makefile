@@ -6,7 +6,7 @@
 #    By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/14 03:21:58 by emaugale          #+#    #+#              #
-#    Updated: 2023/02/14 18:38:35 by emaugale         ###   ########.fr        #
+#    Updated: 2023/03/15 04:05:49 by emaugale         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,13 +15,14 @@ NAME 		=	nm
 SRCS = main.c 
 SRCS += utils.c
 SRCS += print.c
+SRCS += parsing.c
 
 OBJS		=		$(SRCS:.c=.o)
 INCLUDE		= 		include
 AR		=		#ar rcs
 RM		=		rm -f
-CC		=		clang
-CFLAGS		=	-Wall -Wextra -Werror -g3 #-fsanitize=thread
+CC		=		gcc
+CFLAGS		=	-Wall -Wextra -Werror -g#-g3 #-fsanitize=thread
 
 %.o:				%.c
 	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INCLUDE)

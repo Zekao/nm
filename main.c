@@ -6,12 +6,11 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/13 03:01:46 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 04:08:29 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "include/nm.h"
-#include <stdbool.h>
 
 int str_starts_with(char const *haystack, char const *needle)
 {
@@ -38,8 +37,96 @@ static bool is_text_section(char const *section)
     return str_starts_with(section, ".text") || str_starts_with(section, ".fini") || str_starts_with(section, ".init");
 }
 
+static void putnbr_hex(size_t n)
+{
+	char *hex = "0123456789abcdef";
+	if (n > 15)
+		putnbr_hex(n / 16);
+	write(1, &hex[n % 16], 1);
+}
 
+static void	ft_putstr(char *str)
+{
+	write(1, str, ft_strlen(str));
+}
 
+size_t symbol_len32(Elf32_Addr value)
+{
+	size_t len = 0;
+	while (value > 0)
+	{
+		value /= 16;
+		len++;
+	}
+	return len;
+}
+
+size_t symbol_len64(Elf64_Addr value)
+{
+	size_t len = 0;
+	while (value > 0)
+	{
+		value /= 16;
+		len++;
+	}
+	return len;
+}
+
+int	ft_strcmp(char *s1, char *s2)
+{
+	int i;
+
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return (s1[i] - s2[i]);
+}
+
+static void print_32(t_content_32 **content)
+{
+	content = sort_t_content_32(content);
+	for (size_t i = 0; content[i]; i++)
+	{
+		if (content[i]->type != 'a') {
+			if (content[i]->symbol.st_value > 0) {
+				for (size_t j = 0; j + symbol_len32(content[i]->symbol.st_value) < 8; j++)
+					write(1, "0", 1);
+				putnbr_hex(content[i]->symbol.st_value);
+				write(1, " ", 1);
+			}
+			else {
+				write(1, "         ", 9);
+			}
+				write(1, &content[i]->type, 1);
+				write(1, " ", 1);
+				ft_putstr(content[i]->section);
+				write(1, "\n", 1);
+		}
+	}
+}
+
+static void print_64(t_content_64 **content)
+{
+	content = sort_t_content_64(content);
+	for (size_t i = 0; content[i]; i++)
+	{
+		if (content[i]->type != 'a') {
+			if (content[i]->symbol.st_value > 0) {
+				for (size_t j = 0; j + symbol_len64(content[i]->symbol.st_value) < 16; j++)
+					write(1, "0", 1);
+				putnbr_hex(content[i]->symbol.st_value);
+				write(1, " ", 1);
+			}
+			else {
+				write(1, "                ", 17);
+			}
+				write(1, &content[i]->type, 1);
+				write(1, " ", 1);
+				ft_putstr(content[i]->section);
+				write(1, "\n", 1);
+		}
+	}
+}
 
 char **parse_elf32(Elf32_Ehdr *header)
 {
@@ -60,6 +147,7 @@ char **parse_elf32(Elf32_Ehdr *header)
 	char 			*section_name;
 	size_t 			j;
 	size_t			i;
+	t_content_32		**content;
 
 
 
@@ -76,6 +164,9 @@ char **parse_elf32(Elf32_Ehdr *header)
 	symbols = (void *)header + symtab->sh_offset;
 	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
+	content = malloc(sizeof(t_content_32 *) * (symtab->sh_size / sizeof(Elf32_Sym)));
+	if (!content)
+		return (NULL);
 	for (j = 1; j < symtab->sh_size / sizeof(Elf32_Sym); j++)
 	{
 		if (symbols[j].st_shndx != 0 && symbols[j].st_shndx < header->e_shnum)
@@ -84,8 +175,14 @@ char **parse_elf32(Elf32_Ehdr *header)
 		}
 		else
 			section_name = NULL;
-		print_symbol_line32(&symbols[j], symbol_name_table, section_name);
+		content[j - 1] = malloc(sizeof(t_content_32));
+		if (!content[j - 1])
+			return (NULL);
+		content[j - 1]->type = content_flag32(&symbols[j], section_name);
+		content[j - 1]->symbol = symbols[j];
+		content[j - 1]->section = symbol_name_table + symbols[j].st_name;
 	}
+	print_32(content);
 	return (NULL);
 }
 
@@ -247,6 +344,7 @@ char **parse_elf64(Elf64_Ehdr *header)
 	size_t 			j;
 	size_t			i;
 	char 			*section_name;
+	t_content_64	**content;
 
 
 
@@ -263,7 +361,10 @@ char **parse_elf64(Elf64_Ehdr *header)
 	symbols = (void *)header + symtab->sh_offset;
 	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
-	for (j = 1; j < symtab->sh_size / sizeof(Elf64_Sym); j++)
+	content = malloc(sizeof(t_content_64 *) * (symtab->sh_size / sizeof(Elf32_Sym)));
+	if (!content)
+		return (NULL);
+	for (j = 1; j < symtab->sh_size / sizeof(Elf32_Sym); j++)
 	{
 		if (symbols[j].st_shndx != 0 && symbols[j].st_shndx < header->e_shnum)
 		{
@@ -271,8 +372,14 @@ char **parse_elf64(Elf64_Ehdr *header)
 		}
 		else
 			section_name = NULL;
-		print_symbol_line(&symbols[j], symbol_name_table, section_name);
+		content[j - 1] = malloc(sizeof(t_content_64));
+		if (!content[j - 1])
+			return (NULL);
+		content[j - 1]->type = content_flag(&symbols[j], section_name);
+		content[j - 1]->symbol = symbols[j];
+		content[j - 1]->section = symbol_name_table + symbols[j].st_name;
 	}
+	print_64(content);
 	return (NULL);
 }
 
@@ -302,8 +409,6 @@ int main(int argc, char **argv)
 	if (fstat(fd, &sb) == -1)
 		return (perror("fstat"), 1);
 	
-	printf("File size: %ld bytes\n", sb.st_size);
-
 	header = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	 
 	if (header == MAP_FAILED)
