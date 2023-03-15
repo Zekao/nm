@@ -6,7 +6,7 @@
 #    By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/14 03:21:58 by emaugale          #+#    #+#              #
-#    Updated: 2023/03/15 04:05:49 by emaugale         ###   ########.fr        #
+#    Updated: 2023/03/15 18:54:48 by emaugale         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,8 @@ SRCS = main.c
 SRCS += utils.c
 SRCS += print.c
 SRCS += parsing.c
+SRCS += free.c
+SRCS += content_flag.c
 
 OBJS		=		$(SRCS:.c=.o)
 INCLUDE		= 		include

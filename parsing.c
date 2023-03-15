@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 03:57:08 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 11:31:15 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 19:18:47 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ t_content_32 **sort_t_content_32(t_content_32 **content) {
                 temp = content[i];
                 content[i] = content[j];
                 content[j] = temp;
-            } else if (cmp_result == 0 && strcmp(content[i]->section, content[j]->section) > 0) {
+            } else if (cmp_result == 0 && ft_strcmp(content[i]->section, content[j]->section) > 0) {
                 // If the sections are equal ignoring underscores, compare them directly
                 temp = content[i];
                 content[i] = content[j];
@@ -90,7 +90,7 @@ t_content_64 **sort_t_content_64(t_content_64 **content) {
                 temp = content[i];
                 content[i] = content[j];
                 content[j] = temp;
-            } else if (cmp_result == 0 && strcmp(content[i]->section, content[j]->section) > 0) {
+            } else if (cmp_result == 0 && ft_strcmp(content[i]->section, content[j]->section) > 0) {
                 // If the sections are equal ignoring underscores, compare them directly
                 temp = content[i];
                 content[i] = content[j];

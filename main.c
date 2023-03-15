@@ -6,81 +6,11 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 11:32:53 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 19:21:01 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "include/nm.h"
-
-int str_starts_with(char const *haystack, char const *needle)
-{
-    while (*needle && *haystack && *haystack == *needle)
-    {
-        ++haystack;
-        ++needle;
-    }
-    return *needle == '\0';
-}
-
-static bool is_data_section(char const *section)
-{
-    return str_starts_with(section, ".dynamic") || str_starts_with(section, ".data") || str_starts_with(section, ".init_array") || str_starts_with(section, ".fini_array") || str_starts_with(section, ".got");
-}
-
-static bool is_readonly_section(char const *section)
-{
-    return str_starts_with(section, ".rodata") || str_starts_with(section, ".note") || str_starts_with(section, ".eh_frame") || str_starts_with(section, ".eh_frame_hdr");
-}
-
-static bool is_text_section(char const *section)
-{
-    return str_starts_with(section, ".text") || str_starts_with(section, ".fini") || str_starts_with(section, ".init");
-}
-
-static void putnbr_hex(size_t n)
-{
-	char *hex = "0123456789abcdef";
-	if (n > 15)
-		putnbr_hex(n / 16);
-	write(1, &hex[n % 16], 1);
-}
-
-static void	ft_putstr(char *str)
-{
-	write(1, str, ft_strlen(str));
-}
-
-size_t symbol_len32(Elf32_Addr value)
-{
-	size_t len = 0;
-	while (value > 0)
-	{
-		value /= 16;
-		len++;
-	}
-	return len;
-}
-
-size_t symbol_len64(Elf64_Addr value)
-{
-	size_t len = 0;
-	while (value > 0)
-	{
-		value /= 16;
-		len++;
-	}
-	return len;
-}
-
-int	ft_strcmp(char *s1, char *s2)
-{
-	int i;
-
-	i = 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
-		i++;
-	return (s1[i] - s2[i]);
-}
 
 static void print_32(t_content_32 **content)
 {
@@ -177,149 +107,15 @@ char **parse_elf32(Elf32_Ehdr *header)
 			section_name = NULL;
 		content[j - 1] = malloc(sizeof(t_content_32));
 		if (!content[j - 1])
-			return (NULL);
+			return (free_struct(content), NULL);
 		content[j - 1]->type = content_flag32(&symbols[j], section_name);
 		content[j - 1]->symbol = symbols[j];
 		content[j - 1]->section = symbol_name_table + symbols[j].st_name;
 	}
 	print_32(content);
+	free_struct(content);
 	return (NULL);
 }
-
-char	content_flag32(Elf32_Sym *symbol, char *section)
-{
-	if (symbol->st_shndx == SHN_ABS)
-    {
-        if (ELF32_ST_BIND(symbol->st_info) == STB_LOCAL)
-            return ('a');
-        else if (ELF32_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('A');
-    }
-    else if (section && str_starts_with(section, ".bss"))
-    {
-        if (ELF32_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('b');
-        else if (ELF32_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('B');
-    }
-    else if (symbol->st_shndx == SHN_COMMON)
-    {
-        if (ELF32_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('c');
-        else if (ELF32_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('C');
-    }
-    else if (section && is_data_section(section))
-    {
-        if (ELF32_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('d');
-        else if (ELF32_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('D');
-        else if (ELF32_ST_BIND(symbol->st_info) == STB_WEAK)
-			return ('W');
-    }
-    else if (section && is_readonly_section(section))
-    {
-        if (ELF32_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('r');
-        else if (ELF32_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('R');
-    }
-    else if (section && is_text_section(section))
-    {
-        if (ELF32_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('t');
-        else if (ELF32_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('T');
-    }
-    else if (ELF32_ST_BIND(symbol->st_info) == STB_WEAK && ELF32_ST_TYPE(symbol->st_info) == STT_OBJECT)
-    {
-		return ('v');
-    }
-    else if (ELF32_ST_BIND(symbol->st_info) == STB_WEAK)
-    {
-		return ('w');
-    }
-    else if (symbol->st_shndx == SHN_UNDEF)
-    {
-		return ('U');
-    }
-	return ('?');
-}
-
-char	content_flag(Elf64_Sym *symbol, char *section)
-{
-	if (symbol->st_shndx == SHN_ABS)
-    {
-        if (ELF64_ST_BIND(symbol->st_info) == STB_LOCAL)
-            return ('a');
-        else if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('A');
-    }
-    else if (section && str_starts_with(section, ".bss"))
-    {
-        if (ELF64_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('b');
-        else if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('B');
-    }
-    else if (symbol->st_shndx == SHN_COMMON)
-    {
-        if (ELF64_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('c');
-        else if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('C');
-    }
-    else if (section && is_data_section(section))
-    {
-        if (ELF64_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('d');
-        else if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('D');
-        else if (ELF64_ST_BIND(symbol->st_info) == STB_WEAK)
-			return ('W');
-    }
-    else if (section && is_readonly_section(section))
-    {
-        if (ELF64_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('r');
-        else if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('R');
-    }
-    else if (section && is_text_section(section))
-    {
-        if (ELF64_ST_BIND(symbol->st_info) == STB_LOCAL)
-			return ('t');
-        else if (ELF64_ST_BIND(symbol->st_info) == STB_GLOBAL)
-			return ('T');
-    }
-    else if (ELF64_ST_BIND(symbol->st_info) == STB_WEAK && ELF64_ST_TYPE(symbol->st_info) == STT_OBJECT)
-    {
-		return ('v');
-    }
-    else if (ELF64_ST_BIND(symbol->st_info) == STB_WEAK)
-    {
-		return ('w');
-    }
-    else if (symbol->st_shndx == SHN_UNDEF)
-    {
-		return ('U');
-    }
-	return ('?');
-}
-
-// void	print_symbol_line(Elf64_Sym *symbol, char *strtab_content)
-// {
-// 	char symbol_type = content_flag(symbol);
-
-// 	if (symbol_type == '?')
-// 		return ;
-// 	else if (symbol_type != 'U')
-// 		printf("%016lx %c %s\n", symbol->st_value, symbol_type, strtab_content + symbol->st_name);
-
-// 	else
-// 		printf("%-17c %c %s\n", 0, symbol_type, strtab_content + symbol->st_name);
-// }
 
 	/*								Macros Used							*/
 	//-----------------------------------------------------------------//
@@ -374,13 +170,13 @@ char **parse_elf64(Elf64_Ehdr *header)
 			section_name = NULL;
 		content[j - 1] = malloc(sizeof(t_content_64));
 		if (!content[j - 1])
-			return (NULL);
+			return (free_struct64(content), NULL);
 		content[j - 1]->type = content_flag(&symbols[j], section_name);
 		content[j - 1]->symbol = symbols[j];
 		content[j - 1]->section = symbol_name_table + symbols[j].st_name;
 	}
 	print_64(content);
-	return (NULL);
+	return (free_struct64(content), NULL);
 }
 
 int main(int argc, char **argv)
@@ -404,10 +200,10 @@ int main(int argc, char **argv)
 	else
 		fd = open(argv[1], O_RDONLY | S_IRUSR | S_IWUSR);
 	if (fd == -1)
-		return (perror(""), 1);
+		return (ft_putstr_error("Error: cannot open file\n"));
 
 	if (fstat(fd, &sb) == -1)
-		return (perror("fstat"), 1);
+		return (ft_putstr_error("Error: cannot stat file\n"));
 	
 	header = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	 

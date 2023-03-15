@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 22:55:18 by emaugale          #+#    #+#             */
-/*   Updated: 2023/02/13 23:33:19 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 19:16:14 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,59 @@ int check_elf(Elf64_Ehdr *header)
         header->e_ident[EI_MAG3] != ELFMAG3)
         return (-1);
     return (0);
+}
+
+void putnbr_hex(size_t n)
+{
+	char *hex = "0123456789abcdef";
+	if (n > 15)
+		putnbr_hex(n / 16);
+	write(1, &hex[n % 16], 1);
+}
+
+int str_starts_with(char const *haystack, char const *needle)
+{
+    while (*needle && *haystack && *haystack == *needle)
+    {
+        ++haystack;
+        ++needle;
+    }
+    return *needle == '\0';
+}
+
+void	ft_putstr(char *str)
+{
+	write(1, str, ft_strlen(str));
+}
+
+size_t symbol_len32(Elf32_Addr value)
+{
+	size_t len = 0;
+	while (value > 0)
+	{
+		value /= 16;
+		len++;
+	}
+	return len;
+}
+
+size_t symbol_len64(Elf64_Addr value)
+{
+	size_t len = 0;
+	while (value > 0)
+	{
+		value /= 16;
+		len++;
+	}
+	return len;
+}
+
+int	ft_strcmp(char *s1, char *s2)
+{
+	int i;
+
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return (s1[i] - s2[i]);
 }
