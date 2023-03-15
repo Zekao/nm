@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 04:08:29 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 11:32:53 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ static void print_64(t_content_64 **content)
 				write(1, " ", 1);
 			}
 			else {
-				write(1, "                ", 17);
+				write(1, "                 ", 17);
 			}
 				write(1, &content[i]->type, 1);
 				write(1, " ", 1);
@@ -361,10 +361,10 @@ char **parse_elf64(Elf64_Ehdr *header)
 	symbols = (void *)header + symtab->sh_offset;
 	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
-	content = malloc(sizeof(t_content_64 *) * (symtab->sh_size / sizeof(Elf32_Sym)));
+	content = malloc(sizeof(t_content_64 *) * (symtab->sh_size / sizeof(Elf64_Sym)));
 	if (!content)
 		return (NULL);
-	for (j = 1; j < symtab->sh_size / sizeof(Elf32_Sym); j++)
+	for (j = 1; j < symtab->sh_size / sizeof(Elf64_Sym); j++)
 	{
 		if (symbols[j].st_shndx != 0 && symbols[j].st_shndx < header->e_shnum)
 		{

@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 03:57:08 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 04:06:41 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 11:31:15 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,36 @@ static int ft_strcmp_ignore_underscores(const char *s1, const char *s2) {
     if (!s1 || !s2) {
         return 0;
     }
-    while (is_underscore(*s1) && *(s1 + 1) != '\0') {
-        s1++;
-    }
-    while (is_underscore(*s2) && *(s2 + 1) != '\0') {
-        s2++;
-    }
-    while (*s1 && *s2) {
-        char c1 = (*s1 >= 'A' && *s1 <= 'Z') ? *s1 + 32 : *s1;
-        char c2 = (*s2 >= 'A' && *s2 <= 'Z') ? *s2 + 32 : *s2;
+    const char *p1 = s1;
+    const char *p2 = s2;
+    while (*p1 && *p2) {
+        if (is_underscore(*p1)) {
+            p1++;
+            continue;
+        }
+        if (is_underscore(*p2)) {
+            p2++;
+            continue;
+        }
+        char c1 = (*p1 >= 'A' && *p1 <= 'Z') ? *p1 + 32 : *p1;
+        char c2 = (*p2 >= 'A' && *p2 <= 'Z') ? *p2 + 32 : *p2;
         if (c1 != c2) {
             return c1 - c2;
         }
-        s1++;
-        s2++;
+        p1++;
+        p2++;
     }
-    if (is_underscore(*s1)) {
+    if (is_underscore(*p1)) {
         return 1;
     }
-    if (is_underscore(*s2)) {
+    if (is_underscore(*p2)) {
         return -1;
     }
-    return 0;
+    return (*p1 - *p2);
 }
+
+
+#include <string.h>
 
 t_content_32 **sort_t_content_32(t_content_32 **content) {
     int i, j;
@@ -54,6 +61,11 @@ t_content_32 **sort_t_content_32(t_content_32 **content) {
         while (content[j]) {
             int cmp_result = ft_strcmp_ignore_underscores(content[i]->section, content[j]->section);
             if (cmp_result > 0) {
+                temp = content[i];
+                content[i] = content[j];
+                content[j] = temp;
+            } else if (cmp_result == 0 && strcmp(content[i]->section, content[j]->section) > 0) {
+                // If the sections are equal ignoring underscores, compare them directly
                 temp = content[i];
                 content[i] = content[j];
                 content[j] = temp;
@@ -71,12 +83,15 @@ t_content_64 **sort_t_content_64(t_content_64 **content) {
 
     i = 0;
     while (content[i]) {
-	    printf("rip\n");
         j = i + 1;
         while (content[j]) {
-	        printf("rip\n");
             int cmp_result = ft_strcmp_ignore_underscores(content[i]->section, content[j]->section);
             if (cmp_result > 0) {
+                temp = content[i];
+                content[i] = content[j];
+                content[j] = temp;
+            } else if (cmp_result == 0 && strcmp(content[i]->section, content[j]->section) > 0) {
+                // If the sections are equal ignoring underscores, compare them directly
                 temp = content[i];
                 content[i] = content[j];
                 content[j] = temp;
