@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 22:55:18 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 19:37:33 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 21:51:43 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ int check_elf(Elf64_Ehdr *header)
         header->e_ident[EI_MAG2] != ELFMAG2 ||
         header->e_ident[EI_MAG3] != ELFMAG3)
         return (-1);
+	else if (header->e_type != ET_REL && header->e_type != ET_DYN)
+		return (-1);
     return (0);
 }
 
