@@ -6,11 +6,31 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 22:55:18 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 19:37:33 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 19:47:23 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "include/nm.h"
+#include "../include/nm_bonus.h"
+
+char	*ft_strdup(char *str)
+{
+	char	*dup;
+	int		i;
+
+	i = 0;
+	if (!str)
+		return (NULL);
+	dup = malloc(sizeof(char) * (ft_strlen(str) + 1));
+	if (!dup)
+		return (NULL);
+	while (str[i])
+	{
+		dup[i] = str[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
 
 size_t  ft_strlen(char *str)
 {
