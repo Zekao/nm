@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/16 23:04:20 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/16 23:25:31 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void print_32(t_content_32 **content)
 	for (size_t i = 0; content[i]; i++)
 	{
 		if (content[i]->type != 'a') {
-			if (content[i]->symbol.st_value > 0) {
+			if ((content[i]->symbol.st_value >= 1 && content[i]->type != 'U') || (content[i]->type == 'T' && content[i]->symbol.st_value == 0)) {
 				for (size_t j = 0; j + symbol_len32(content[i]->symbol.st_value) < 8; j++)
 					write(1, "0", 1);
 				putnbr_hex(content[i]->symbol.st_value);
@@ -41,8 +41,8 @@ static void print_64(t_content_64 **content)
 	for (size_t i = 0; content[i]; i++)
 	{
 		if (content[i]->type != 'a' && content[i]->type != '?' && ft_strlen(content[i]->section) > 0) {
-			if (content[i]->symbol.st_value >= 0 && content[i]->type != 'U') {
-				for (size_t j = 0; j + symbol_len64(content[i]->symbol.st_value) <= 16; j++)
+			if ((content[i]->symbol.st_value >= 1 && content[i]->type != 'U') || (content[i]->type == 'T' && content[i]->symbol.st_value == 0)) {
+				for (size_t j = 0; j + symbol_len64(content[i]->symbol.st_value) < 16; j++)
 					write(1, "0", 1);
 				if (symbol_len64(content[i]->symbol.st_value) > 1)
 					putnbr_hex(content[i]->symbol.st_value);
