@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 03:57:08 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 19:18:47 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/15 22:03:20 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ t_content_32 **sort_t_content_32(t_content_32 **content) {
 
 t_content_64 **sort_t_content_64(t_content_64 **content) {
     int i, j;
-    t_content_64 *temp;
+    t_content_64 *temp = NULL;
 
     i = 0;
     while (content[i]) {

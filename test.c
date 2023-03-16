@@ -1,4 +1,7 @@
+#include <stdio.h>
 int main(void)
 {
-    return (1);
+	printf("coucou boup bip boup");
+	strlen("42");
+    	return (1);
 }

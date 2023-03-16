@@ -6,7 +6,7 @@
 #    By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/14 03:21:58 by emaugale          #+#    #+#              #
-#    Updated: 2023/03/15 19:33:40 by emaugale         ###   ########.fr        #
+#    Updated: 2023/03/15 23:56:35 by emaugale         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,7 @@ OBJS_BONUS	=		$(SRCS_BONUS:.c=.o)
 INCLUDE		= 		include
 RM		=		rm -f
 CC		=		cc
-CFLAGS		=	-Wall -Wextra -Werror -g
+CFLAGS		=	-Wall -Wextra -Werror -g #-fsanitize=address #-fsanitize=undefined -fsanitize=leak
 
 %.o:				%.c
 	@$(CC) $(CFLAGS) -c $< -o $@ -I $(INCLUDE)
