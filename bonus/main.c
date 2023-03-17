@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 20:32:37 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 01:30:51 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,29 +18,21 @@ static void print_32(t_content_32 **content, char *bonus_flag)
 		content = sort_t_content_32(content);
 	for (size_t i = 0; content[i]; i++)
 	{
-		if (content[i]->type != 'a' && ft_strcmp(bonus_flag, "-u") != 0) {
-			if (content[i]->symbol.st_value > 0) {
+		if ((content[i]->type != 'a' || !ft_strcmp(bonus_flag, "-a")) && content[i]->type != '?' && ft_strlen(content[i]->section) > 0) {
+			if ((content[i]->symbol.st_value >= 1 && content[i]->type != 'U') || (content[i]->symbol.st_shndx != SHN_UNDEF)) {
 				for (size_t j = 0; j + symbol_len32(content[i]->symbol.st_value) < 8; j++)
 					write(1, "0", 1);
-				putnbr_hex(content[i]->symbol.st_value);
+				if (symbol_len32(content[i]->symbol.st_value) > 1)
+					putnbr_hex(content[i]->symbol.st_value);
 				write(1, " ", 1);
 			}
 			else {
 				write(1, "         ", 9);
 			}
-				write(1, &content[i]->type, 1);
-				write(1, " ", 1);
-				ft_putstr(content[i]->section);
-				write(1, "\n", 1);
-		}
-		else {
-			if (content[i]->type == 'U' || content[i]->type == 'w') {
-				ft_putstr("         ");
-				write(1, &content[i]->type, 1);
-				write(1, " ", 1);
-				ft_putstr(content[i]->section);
-				write(1, "\n", 1);
-			}
+			write(1, &content[i]->type, 1);
+			write(1, " ", 1);
+			ft_putstr(content[i]->section);
+			write(1, "\n", 1);
 		}
 	}
 }
@@ -51,29 +43,21 @@ static void print_64(t_content_64 **content, char *bonus_flag)
 		content = sort_t_content_64(content);
 	for (size_t i = 0; content[i]; i++)
 	{
-		if (content[i]->type != 'a' && ft_strcmp(bonus_flag, "-u") != 0) {
-			if (content[i]->symbol.st_value > 0) {
+		if ((content[i]->type != 'a' || !ft_strcmp(bonus_flag, "-a")) && content[i]->type != '?' && ft_strlen(content[i]->section) > 0) {
+			if ((content[i]->symbol.st_value >= 1 && content[i]->type != 'U') || (content[i]->symbol.st_shndx != SHN_UNDEF)) {
 				for (size_t j = 0; j + symbol_len64(content[i]->symbol.st_value) < 16; j++)
 					write(1, "0", 1);
-				putnbr_hex(content[i]->symbol.st_value);
+				if (symbol_len64(content[i]->symbol.st_value) > 1)
+					putnbr_hex(content[i]->symbol.st_value);
 				write(1, " ", 1);
 			}
 			else {
 				write(1, "                 ", 17);
 			}
-				write(1, &content[i]->type, 1);
-				write(1, " ", 1);
-				ft_putstr(content[i]->section);
-				write(1, "\n", 1);
-		}
-		else {
-			if (content[i]->type == 'U' || content[i]->type == 'w') {
-				ft_putstr("                 ");
-				write(1, &content[i]->type, 1);
-				write(1, " ", 1);
-				ft_putstr(content[i]->section);
-				write(1, "\n", 1);
-			}
+			write(1, &content[i]->type, 1);
+			write(1, " ", 1);
+			ft_putstr(content[i]->section);
+			write(1, "\n", 1);
 		}
 	}
 }
@@ -114,7 +98,7 @@ char **parse_elf32(Elf32_Ehdr *header, char *bonus_flag)
 	symbols = (void *)header + symtab->sh_offset;
 	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
-	content = malloc(sizeof(t_content_32 *) * (symtab->sh_size / sizeof(Elf32_Sym)));
+	content = ft_calloc(sizeof(t_content_32 *) , (symtab->sh_size / sizeof(Elf32_Sym)));
 	if (!content)
 		return (NULL);
 	for (j = 1; j < symtab->sh_size / sizeof(Elf32_Sym); j++)
@@ -182,7 +166,7 @@ char **parse_elf64(Elf64_Ehdr *header, char *bonus_flag)
 	symbols = (void *)header + symtab->sh_offset;
 	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
-	content = malloc(sizeof(t_content_64 *) * (symtab->sh_size / sizeof(Elf64_Sym)));
+	content = ft_calloc(sizeof(t_content_64 *) , (symtab->sh_size / sizeof(Elf64_Sym)));
 	if (!content)
 		return (NULL);
 	for (j = 1; j < symtab->sh_size / sizeof(Elf64_Sym); j++)
@@ -240,21 +224,21 @@ int main(int argc, char **argv)
 			return (close(fd), ft_putstr_error("Error: cannot allocate memory\n"));
 
 	}
-	if (ft_strcmp(option, "-g") != 0 && ft_strcmp(option, "-s") != 0 && ft_strcmp(option, "-u") != 0 && ft_strcmp(option, "-p") != 0)
+	if (ft_strcmp(option, "-g") != 0 && ft_strcmp(option, "-s") != 0 && ft_strcmp(option, "-u") != 0 && ft_strcmp(option, "-p") != 0 && ft_strcmp(option, "-r") != 0 && ft_strcmp(option, "-a") != 0)
 		return (free(option), close(fd), ft_putstr_error("Error: invalid option\n"));
 	if (fd == -1)
 		return (free(option), ft_putstr_error("Error: cannot open file\n"));
 
 	if (fstat(fd, &sb) == -1)
-		return (ft_putstr_error("Error: cannot stat file\n"));
+		return (free(option), ft_putstr_error("Error: cannot stat file\n"));
 	
 	header = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	 
 	if (header == MAP_FAILED)
-		return (ft_putstr_error("Error: cannot map file\n"));
+		return (free(option), ft_putstr_error("Error: cannot map file\n"));
 
 	if (check_elf(header) == -1)
-		return (ft_putstr_error("Error: not an ELF file\n"));
+		return (free(option), ft_putstr_error("Error: not an ELF file\n"));
 
 	if (header->e_ident[EI_CLASS] == ELFCLASS32)
 		print_content_32((Elf32_Ehdr *)header, option);
@@ -262,6 +246,7 @@ int main(int argc, char **argv)
 		print_content_64(header, option);
 
 	if (munmap(header, sb.st_size) == -1)
-		return (ft_putstr_error("Error: cannot unmap file\n"));
+		return (free(option), ft_putstr_error("Error: cannot unmap file\n"));
 	close(fd);
+	free(option);
 }

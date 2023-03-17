@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 22:55:18 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 22:02:16 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 01:26:10 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,4 +95,31 @@ int	ft_strcmp(char *s1, char *s2)
 	while (s1[i] && s2[i] && s1[i] == s2[i])
 		i++;
 	return (s1[i] - s2[i]);
+}
+
+static void	*ft_memset(void *str, int c, size_t n)
+{
+	size_t			i;
+	unsigned char	*tempstr;
+
+	tempstr = (unsigned char *)str;
+	i = 0;
+	while (n)
+	{
+		tempstr[i] = c;
+		i++;
+		n--;
+	}
+	return (str);
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	void	*str;
+
+	str = (void *)malloc(count * size);
+	if (!str)
+		return (NULL);
+	ft_memset(str, 0, (count * size));
+	return (str);
 }

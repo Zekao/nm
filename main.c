@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/16 23:25:31 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 01:31:18 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static void print_64(t_content_64 **content)
 	for (size_t i = 0; content[i]; i++)
 	{
 		if (content[i]->type != 'a' && content[i]->type != '?' && ft_strlen(content[i]->section) > 0) {
-			if ((content[i]->symbol.st_value >= 1 && content[i]->type != 'U') || (content[i]->type == 'T' && content[i]->symbol.st_value == 0)) {
+			if ((content[i]->symbol.st_value >= 1 && content[i]->type != 'U') || (content[i]->symbol.st_shndx != SHN_UNDEF)) {
 				for (size_t j = 0; j + symbol_len64(content[i]->symbol.st_value) < 16; j++)
 					write(1, "0", 1);
 				if (symbol_len64(content[i]->symbol.st_value) > 1)
@@ -51,10 +51,10 @@ static void print_64(t_content_64 **content)
 			else {
 				write(1, "                 ", 17);
 			}
-				write(1, &content[i]->type, 1);
-				write(1, " ", 1);
-				ft_putstr(content[i]->section);
-				write(1, "\n", 1);
+			write(1, &content[i]->type, 1);
+			write(1, " ", 1);
+			ft_putstr(content[i]->section);
+			write(1, "\n", 1);
 		}
 	}
 }
@@ -95,7 +95,7 @@ char **parse_elf32(Elf32_Ehdr *header)
 	symbols = (void *)header + symtab->sh_offset;
 	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
-	content = malloc(sizeof(t_content_32 *) * (symtab->sh_size / sizeof(Elf32_Sym)));
+	content = ft_calloc(sizeof(t_content_32 *), (symtab->sh_size / sizeof(Elf32_Sym)));
 	if (!content)
 		return (NULL);
 	for (j = 1; j < symtab->sh_size / sizeof(Elf32_Sym); j++)
@@ -158,7 +158,7 @@ char **parse_elf64(Elf64_Ehdr *header)
 	symbols = (void *)header + symtab->sh_offset;
 	char *symbol_name_table = (char *)header + section[symtab->sh_link].sh_offset;
 
-	content = malloc(sizeof(t_content_64 *) * (symtab->sh_size / sizeof(Elf64_Sym)));
+	content = ft_calloc(sizeof(t_content_64 *), (symtab->sh_size / sizeof(Elf64_Sym)));
 	if (!content)
 		return (NULL);
 	for (j = 1; j < symtab->sh_size / sizeof(Elf64_Sym); j++)

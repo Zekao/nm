@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 13:55:15 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 20:03:31 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 01:30:19 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,12 @@ void                free_struct(t_content_32 **content);
 void                free_struct64(t_content_64 **content);
 void                putnbr_hex(size_t n);
 void                ft_putstr(char *str);
+char                *ft_strdup(char *str);
+void                *ft_calloc(size_t count, size_t size);
 int                 ft_strcmp(char *s1, char *s2);
 size_t              symbol_len32(Elf32_Addr value);
 size_t              symbol_len64(Elf64_Addr value);
+void                *ft_calloc(size_t count, size_t size);
 
 /**************************************************************/
 /*                        Print functions                     */

@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 22:55:18 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 22:01:13 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 01:29:04 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,23 @@
 
 char	*ft_strdup(char *str)
 {
-	char	*dup;
 	int		i;
+	char	*newstr;
 
 	i = 0;
-	if (!str)
+	while (str[i])
+		i++;
+	newstr = malloc (sizeof(char) * (i + 1));
+	if (!newstr)
 		return (NULL);
-	dup = malloc(sizeof(char) * (ft_strlen(str) + 1));
-	if (!dup)
-		return (NULL);
+	i = 0;
 	while (str[i])
 	{
-		dup[i] = str[i];
+		newstr[i] = str[i];
 		i++;
 	}
-	dup[i] = '\0';
-	return (dup);
+	newstr[i] = '\0';
+	return (newstr);
 }
 
 size_t  ft_strlen(char *str)
@@ -115,4 +116,31 @@ int	ft_strcmp(char *s1, char *s2)
 	while (s1[i] && s2[i] && s1[i] == s2[i])
 		i++;
 	return (s1[i] - s2[i]);
+}
+
+static void	*ft_memset(void *str, int c, size_t n)
+{
+	size_t			i;
+	unsigned char	*tempstr;
+
+	tempstr = (unsigned char *)str;
+	i = 0;
+	while (n)
+	{
+		tempstr[i] = c;
+		i++;
+		n--;
+	}
+	return (str);
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	void	*str;
+
+	str = (void *)malloc(count * size);
+	if (!str)
+		return (NULL);
+	ft_memset(str, 0, (count * size));
+	return (str);
 }
