@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 03:57:08 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 22:03:20 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 14:25:25 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ static int ft_strcmp_ignore_underscores(const char *s1, const char *s2) {
     return (*p1 - *p2);
 }
 
-
-#include <string.h>
 
 t_content_32 **sort_t_content_32(t_content_32 **content) {
     int i, j;

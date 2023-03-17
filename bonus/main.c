@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 21:35:14 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/17 01:30:51 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 14:33:05 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ static void print_32(t_content_32 **content, char *bonus_flag)
 {
 	if (ft_strcmp(bonus_flag, "-p") != 0)
 		content = sort_t_content_32(content);
+	if (ft_strcmp(bonus_flag, "-r") == 0)
+		content = reverse_t_content_32(content);
 	for (size_t i = 0; content[i]; i++)
 	{
 		if ((content[i]->type != 'a' || !ft_strcmp(bonus_flag, "-a")) && content[i]->type != '?' && ft_strlen(content[i]->section) > 0) {
@@ -41,6 +43,8 @@ static void print_64(t_content_64 **content, char *bonus_flag)
 {
 	if (ft_strcmp(bonus_flag, "-p") != 0)
 		content = sort_t_content_64(content);
+	if (ft_strcmp(bonus_flag, "-r") == 0)
+		content = reverse_t_content_64(content);
 	for (size_t i = 0; content[i]; i++)
 	{
 		if ((content[i]->type != 'a' || !ft_strcmp(bonus_flag, "-a")) && content[i]->type != '?' && ft_strlen(content[i]->section) > 0) {

@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 13:55:15 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/17 01:30:19 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 14:25:05 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ typedef struct s_content_64
 
 t_content_32        **sort_t_content_32(t_content_32 **content);
 t_content_64        **sort_t_content_64(t_content_64 **content);
+t_content_32        **reverse_t_content_32(t_content_32 **content);
+t_content_64        **reverse_t_content_64(t_content_64 **content);
 
 /**************************************************************/
 /*                        Utils functions                     */

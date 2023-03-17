@@ -6,7 +6,7 @@
 /*   By: emaugale <emaugale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/15 03:57:08 by emaugale          #+#    #+#             */
-/*   Updated: 2023/03/15 19:44:45 by emaugale         ###   ########.fr       */
+/*   Updated: 2023/03/17 14:32:39 by emaugale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,4 +101,42 @@ t_content_64 **sort_t_content_64(t_content_64 **content) {
         i++;
     }
     return content;
+}
+
+t_content_32 **reverse_t_content_32(t_content_32 **content) {
+    int i, j;
+    t_content_32 *temp = NULL;
+    // reverse the array
+    i = 0;
+    while (content[i])
+        i++;
+    j = i - 1;
+    i = 0;
+    while (i < j) {
+        temp = content[i];
+        content[i] = content[j];
+        content[j] = temp;
+        i++;
+        j--;
+    }
+    return (content);
+}
+
+t_content_64 **reverse_t_content_64(t_content_64 **content) {
+    int i, j;
+    t_content_64 *temp = NULL;
+
+    i = 0;
+    while (content[i])
+        i++;
+    j = i - 1;
+    i = 0;
+    while (i < j) {
+        temp = content[i];
+        content[i] = content[j];
+        content[j] = temp;
+        i++;
+        j--;
+    }
+    return (content);
 }
